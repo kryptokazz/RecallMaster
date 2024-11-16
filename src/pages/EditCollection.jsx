@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Papa from 'papaparse';
 
 function EditCollection() {
   const { collectionId } = useParams();
@@ -26,8 +27,16 @@ function EditCollection() {
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('collections')) || [];
     setCollections(data);
-    const currentCollection = data.find((c) => c.id === parseInt(collectionId));
-    setCollection(currentCollection);
+    const currentCollection = data.find(
+      (c) => c.id === parseInt(collectionId)
+    );
+    if (currentCollection) {
+      // Ensure cards array is initialized
+      if (!currentCollection.cards) {
+        currentCollection.cards = [];
+      }
+      setCollection(currentCollection);
+    }
   }, [collectionId]);
 
   const handleAddField = () => {
@@ -76,8 +85,62 @@ function EditCollection() {
     localStorage.setItem('collections', JSON.stringify(updatedCollections));
   };
 
+  // New function to handle file import
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true, // Assumes the first row contains field names
+        skipEmptyLines: true,
+        complete: (results) => {
+          importData(results.data);
+        },
+        error: (error) => {
+          console.error('Error parsing CSV:', error);
+          alert('Error parsing CSV file.');
+        },
+      });
+    }
+  };
+
+  // Function to process and import data
+  const importData = (data) => {
+    if (!data || data.length === 0) {
+      alert('No data found in the file.');
+      return;
+    }
+
+    // Extract field names from the first object keys
+    const fieldNames = Object.keys(data[0]);
+
+    // Update newFields to reflect the imported fields
+    setNewFields(fieldNames.map((name) => ({ name, value: '' })));
+
+    // Map data to card objects
+    const newCards = data.map((item) => ({
+      id: Date.now() + Math.random(), // Ensure unique ID
+      fields: item,
+    }));
+
+    // Update collection
+    const updatedCollection = {
+      ...collection,
+      cards: [...collection.cards, ...newCards],
+    };
+    const updatedCollections = collections.map((c) =>
+      c.id === collection.id ? updatedCollection : c
+    );
+    setCollections(updatedCollections);
+    setCollection(updatedCollection);
+    localStorage.setItem('collections', JSON.stringify(updatedCollections));
+  };
+
   if (!collection) {
-    return <div>Loading...</div>;
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6">Collection not found.</Typography>
+      </Box>
+    );
   }
 
   return (
@@ -107,6 +170,11 @@ function EditCollection() {
         </Button>
         <Button variant="contained" onClick={handleAddCard}>
           Add Card
+        </Button>
+        {/* Import CSV Button */}
+        <Button variant="contained" component="label">
+          Import CSV
+          <input type="file" accept=".csv" hidden onChange={handleImport} />
         </Button>
       </Stack>
       <Typography variant="h5" component="h3" gutterBottom>
