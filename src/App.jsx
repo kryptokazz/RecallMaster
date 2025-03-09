@@ -15,7 +15,7 @@ function App() {
       <Navbar />
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/RecallMaster" element={<Home />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/edit-collection/:collectionId" element={<EditCollection />} />
           <Route path="/study/:collectionId" element={<StudySession />} />

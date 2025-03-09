@@ -1,6 +1,8 @@
 // src/pages/EditCollection.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   Box,
   TextField,
@@ -22,6 +24,10 @@ function EditCollection() {
     { name: 'Front', value: '' },
     { name: 'Back', value: '' },
   ]);
+
+const navigate = useNavigate();
+
+        
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('collections')) || [];
@@ -80,15 +86,18 @@ function EditCollection() {
     return <div>Loading...</div>;
   }
 
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        mt: 4,
-      }}
-    >
+return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
+      <Box sx={{ width: '100%', maxWidth: 600, mb: 2 }}>
+        <Button 
+          variant="outlined" 
+          onClick={() => navigate('/collections')} 
+          startIcon={<ArrowBackIcon />}
+        >
+          Back to Collections
+        </Button>
+      </Box>
+
       <Typography variant="h4" component="h2" gutterBottom>
         Edit Collection: {collection.name}
       </Typography>

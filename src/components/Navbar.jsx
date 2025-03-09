@@ -8,12 +8,9 @@ function Navbar() {
     <AppBar position="static">
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
+          <Typography variant="h6" component={Link} to="/RecallMaster" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
             Free Recall App
           </Typography>
-          <Button color="inherit" component={Link} to="/">
-            Home
-          </Button>
           <Button color="inherit" component={Link} to="/collections">
             Collections
           </Button>
